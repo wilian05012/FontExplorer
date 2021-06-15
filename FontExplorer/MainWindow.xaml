@@ -1,0 +1,122 @@
+﻿<Window x:Class="FontExplorer.MainWindow" x:Name="Window"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:FontExplorer"
+        xmlns:props="clr-namespace:FontExplorer.Properties"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="Font Explorer" Height="450" Width="800" Icon="font_explorer.ico"
+        Closing="Window_Closing">
+    <Window.DataContext>
+        <local:MainWindowDataContext/>
+    </Window.DataContext>
+    <Window.CommandBindings>
+        <CommandBinding x:Name="ClearSelectionCmd" Command="{x:Static local:MainWindowCommands.ClearSelectedFontCommand}" CanExecute="ClearSelectionCmd_CanExecute" Executed="ClearSelectionCmd_Executed"/>
+        <CommandBinding x:Name="Copy" Command="{x:Static ApplicationCommands.Copy}" Executed="Copy_Executed"/>
+        <CommandBinding x:Name="ClearFilterCmd" Command="{x:Static local:MainWindowCommands.ClearFontFilterCommand}" CanExecute="ClearFilterCmd_CanExecute" Executed="ClearFilterCmd_Executed"/>
+    </Window.CommandBindings>
+    <DockPanel LastChildFill="True">
+        <DockPanel LastChildFill="True" DockPanel.Dock="Top">
+            <TextBlock Text="Font Size:" Margin="4" VerticalAlignment="Center"/>
+            <tk:SingleUpDown Value="{Binding FontSize}" Margin="4" 
+                             Minimum="{Binding Source={x:Static local:MainWindowDataContext.MIN_FONT_SIZE}}" 
+                             Maximum="{Binding Source={x:Static local:MainWindowDataContext.MAX_FONT_SIZE}}"/>
+
+            <TextBlock Text="Color:" Margin="4" VerticalAlignment="Center"/>
+            <tk:ColorPicker SelectedColor="{Binding Path=Color}" Margin="4"/>
+
+            <Button Command="{x:Static local:MainWindowCommands.ClearSelectedFontCommand}"
+                    DockPanel.Dock="Right" Margin="4">
+                <TextBlock>
+                    <Run Style="{StaticResource clear-icon}"/>
+                    <Run Text="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Command.Text}"/>
+                </TextBlock>
+            </Button>
+            
+            <TextBlock Text="Sample Text:" Margin="4" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding SampleText, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="4"/>
+        </DockPanel>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding SelectedFont, StringFormat='Selected Font: {0}'}"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <DockPanel DockPanel.Dock="Left" LastChildFill="True">
+            <Border DockPanel.Dock="Top" BorderBrush="{x:Static SystemColors.ActiveBorderBrush}" BorderThickness="1">
+                <DockPanel LastChildFill="True">
+                    <Grid DockPanel.Dock="Right">
+                        <Button Background="Transparent" BorderBrush="{x:Null}" Padding="4"
+                                Visibility="{Binding IsFilterEmpty, Converter={StaticResource BooltoVisibility}}">
+                            <TextBlock>
+                                <Run Style="{StaticResource search-icon}"/>
+                            </TextBlock>
+                        </Button>
+                        <Button Background="Transparent" BorderBrush="{x:Null}" Padding="4" 
+                                Command="{x:Static local:MainWindowCommands.ClearFontFilterCommand}"
+                                Visibility="{Binding IsFilterNotEmpty, Converter={StaticResource BooltoVisibility}}">
+                            <TextBlock>
+                                <Run Style="{StaticResource times-icon}"/>
+                            </TextBlock>
+                        </Button>
+                    </Grid>
+                    <TextBox BorderBrush="{x:Null}" BorderThickness="0" VerticalContentAlignment="Center"
+                             Text="{Binding FontFilter, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                </DockPanel>
+            </Border>
+            <ListBox ItemsSource="{Binding Path=InstalledFonts}" FontSize="18" BorderThickness="1 0 1 1"
+                     SelectedItem="{Binding SelectedFont}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock FontFamily="{Binding}" Text="{Binding}" ToolTip="{Binding}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <Grid>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          Visibility="{Binding IsSelectedFontNull, Converter={StaticResource BooltoVisibility}}">
+                <ItemsControl ItemsSource="{Binding InstalledFonts}" Margin="4" HorizontalContentAlignment="Stretch">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Left" Command="{x:Static ApplicationCommands.Copy}" CommandParameter="{Binding}"
+                                        VerticalAlignment="Center" Margin="0 0 4 0"
+                                        Background="Transparent" BorderBrush="{x:Null}" Padding="4">
+                                    <TextBlock ToolTip="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Command.Text}">
+                                        <Run Style="{StaticResource copy-icon}"/>
+                                    </TextBlock>
+                                </Button>
+                                <TextBlock FontFamily="{Binding}" ToolTip="{Binding}" Margin="0 0 0 4"
+                                         FontSize="{Binding ElementName=Window, Path=DataContext.FontSize}"
+                                         Text="{Binding ElementName=Window, Path=DataContext.SampleText, Mode=OneWay}"
+                                         Foreground="{Binding ElementName=Window, Path=DataContext.Color, Mode=OneWay, Converter={StaticResource ColorToSolidColorBrush}}"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          Visibility="{Binding IsSelectedFontNotNull, Converter={StaticResource BooltoVisibility}}">
+                <ItemsControl ItemsSource="{Binding Path=FontSizes}" Margin="4" HorizontalContentAlignment="Stretch">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBlock FontFamily="Courier New" TextAlignment="Center" Text="{Binding}" Width="54" ToolTip="Font Size" VerticalAlignment="Center"/>
+                                <TextBlock FontSize="{Binding}" FontFamily="{Binding ElementName=Window, Path=DataContext.SelectedFont}"
+                                           Text="{Binding ElementName=Window, Path=DataContext.SampleText}"
+                                           Foreground="{Binding ElementName=Window, Path=DataContext.Color, Mode=OneWay, Converter={StaticResource ColorToSolidColorBrush}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            
+        </Grid>
+    </DockPanel>
+</Window>

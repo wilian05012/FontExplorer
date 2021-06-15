@@ -1,0 +1,41 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="fas">
+        pack://application:,,,/Resources/Fonts/#Font Awesome 5 Free Solid
+    </FontFamily>
+    <FontFamily x:Key="fab">
+        pack://application:,,,/Resources/Fonts/#Font Awesome 5 Brands Regular
+    </FontFamily>
+    <FontFamily x:Key="far">
+        pack://application:,,,/Resources/Fonts/#Font Awesome 5 Free Regular
+    </FontFamily>
+
+    <Style x:Key="solid-icon" TargetType="Run">
+        <Setter Property="FontFamily" Value="{StaticResource fas}"/>
+    </Style>
+    <Style x:Key="regular-icon" TargetType="Run">
+        <Setter Property="FontFamily" Value="{StaticResource far}"/>
+    </Style>
+    <Style x:Key="brand-icon" TargetType="Run">
+        <Setter Property="FontFamily" Value="{StaticResource fab}"/>
+    </Style>
+
+    <SolidColorBrush x:Key="info" Color="LightBlue"/>
+    <SolidColorBrush x:Key="warn" Color="DarkGoldenrod"/>
+    <SolidColorBrush x:Key="success" Color="DarkGreen"/>
+    <SolidColorBrush x:Key="primary" Color="Navy"/>
+
+    <Style x:Key="search-icon" TargetType="Run" BasedOn="{StaticResource solid-icon}">
+        <Setter Property="Text" Value="&#xf002;"/>
+    </Style>
+    <Style x:Key="copy-icon" TargetType="Run" BasedOn="{StaticResource regular-icon}">
+        <Setter Property="Text" Value="&#xf0c5;"/>
+    </Style>
+    <Style x:Key="clear-icon" TargetType="Run" BasedOn="{StaticResource solid-icon}">
+        <Setter Property="Text" Value="&#xf51a;"/>
+    </Style>
+    <Style x:Key="times-icon" TargetType="Run" BasedOn="{StaticResource solid-icon}">
+        <Setter Property="Text" Value="&#xf00d;"/>
+    </Style>
+
+</ResourceDictionary>
